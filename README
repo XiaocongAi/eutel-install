@@ -1,0 +1,43 @@
+== Setup ==
+== The root setup will also set up the compiler gcc version 
+== Hence, don't setup the gcc version after setting up the root (unless setting up exactly the same version of gcc for compiling the root)
+
+ setupATLAS
+ lsetup git
+ lsetup "cmake 3.11.0"
+ lsetup "root 6.04.12-x86_64-slc6-gcc49-opt"
+
+
+== The ILCSOFT installation package ==
+
+ export ILCSOFT=“/path/where/you/want/to/install/EUTelescope”
+ mkdir $ILCSOFT
+ cd $ILCSOFT
+ cp /afs/cern.ch/work/x/xai/public/ilcsoft/test/eutel-git .
+
+== Compile the ILCSOFT package ==
+
+ cd $ILCSOFT/eutel-git
+ ./ilcsoft-install -i examples/eutelescope/release-standalone.cfg
+
+== Checkout the Eutelescope for radial reco
+
+ cd $ILCSOFT/v01-17-05/Eutelescope/v1.0
+ git remote add xai https://github.com/XiaocongAi/eutelescope.git
+ git fetch xai
+ git checkout -b radial-reco xai/Radial-recon
+
+== Compile the Eutelescope for radial reco==
+== Note that the right version of gcc and root should be used. 
+
+ source $ILCSOFT/v01-17-05/ILCSoft.cmake.env.sh
+ source $ILCSOFT/v01-17-05/init_ilcsoft.sh
+ source $ILCSOFT/v01-17-05/Eutelescope/v1.0/build_env.sh
+
+ cd build
+ 
+ export COMPILER_LOC=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/Gcc/gcc493_x86_64_slc6/slc6/x86_64-slc6-gcc49-opt/bin
+ cmake -DROOT_CONFIG_EXECUTABLE=//cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/root/6.04.12-x86_64-slc6-gcc49-opt/bin/root-config -DEIGEN2_INCLUDE_DIR=/usr/include/eigen3 -DCMAKE_CXX_COMPILER=$COMPILER_LOC/g++ -DCMAKE_C_COMPILER=$COMPILER_LOC/gcc .. 
+
+ make -j4
+ make install 
